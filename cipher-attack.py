@@ -45,15 +45,22 @@ def check_dir(path, directory="testdir"):
 def main():
 
     while True:
-        op = pyip.inputMenu(['New dir', 'Cipher', 'Exit'], "Option->\n", numbered=True, limit=3)
+        op = pyip.inputMenu(['New dir', 'Cipher', 'Delete', 'Exit'], "Option->\n", numbered=True, limit=3)
 
         if op == 'New dir':
             os.chdir(PATH)
-            new_dirname = pyip.inputStr("Dir name?\n", limit=20, timeout=10, blank=True)
+            new_dirname = pyip.inputStr("Dir name?\n", limit=20, blank=True)
             if new_dirname == '':
                 check_dir(os.getcwd())
             else:
                 check_dir(os.getcwd(), new_dirname)  # segundo argumento -> nome para criar um novo diretorio
+            print("Dir '" + dirname + "' created")
+
+        elif op == "Delete":
+            os.chdir(PATH)
+            dirname = pyip.inputStr("Dir name?\n", limit=20)
+            shutil.rmtree(PATH + dirname)
+            print("Dir '" + dirname + "' deleted")
 
         elif op == 'Cipher':
             os.chdir("/home/pedralmeida/Documents/tpr_ransomware")
