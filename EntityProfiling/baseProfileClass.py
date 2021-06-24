@@ -71,6 +71,8 @@ def extractFeatures(data, Class=0):
     oClass = np.ones((nObs, 1)) * Class
     for i in range(nObs):
         M1 = np.mean(data[i, :, :], axis=0)
+        # min1 = np.min(data[i, :, :], axis=0)
+        # max1 = np.max(data[i, :, :], axis=0)
         # Md1=np.median(data[i,:,:],axis=0)
         Std1 = np.std(data[i, :, :], axis=0)
         # S1=stats.skew(data[i,:,:])
@@ -169,7 +171,7 @@ nfig = 1
 
 ## -- 1 -- ##
 normal_use = np.loadtxt('normal_use.dat')
-normal_use2 = np.loadtxt('normal_use.dat')
+normal_use2 = np.loadtxt('normal_use_v2.dat')
 attack = np.loadtxt('attack.dat')
 
 plt.figure(1)
@@ -177,8 +179,8 @@ plot3Classes(normal_use, 'Normal', normal_use2, 'Normal2', attack, 'Attack')
 
 ## -- 2 -- ##
 normal_use_train, normal_use_test = breakTrainTest(normal_use, 100, 0.5)
-normal_use_train2, normal_use_test2 = breakTrainTest(normal_use2, 100, 0.5)
-attack_train, attack_test = breakTrainTest(attack, 56, 0.7)
+normal_use_train2, normal_use_test2 = breakTrainTest(normal_use2, 90, 0.5)
+attack_train, attack_test = breakTrainTest(attack, 128, 0)
 
 plt.figure(2)
 plt.subplot(3, 1, 1)
@@ -195,8 +197,9 @@ plt.title('Normal Use 2')
 plt.ylabel('Bytes/sec')
 plt.subplot(3, 1, 3)
 for i in range(10):
-    plt.plot(attack_train[i, :, 0], 'b')
-    plt.plot(attack_train[i, :, 1], 'g')
+    break
+    plt.plot(attack_test[i, :, 0], 'b')
+    plt.plot(attack_test[i, :, 1], 'g')
 plt.title('Attack')
 plt.ylabel('Bytes/sec')
 plt.show()
@@ -204,10 +207,10 @@ waitforEnter()
 ## -- 3 -- ##
 features_normal_use, oClass_normal_use = extractFeatures(normal_use_train, Class=0)
 features_normal_use2, oClass_normal_use2 = extractFeatures(normal_use_train2, Class=1)
-features_attack, oClass_attack = extractFeatures(attack_train, Class=2)
+# features_attack, oClass_attack = extractFeatures(attack_train, Class=2)
 
-features = np.vstack((features_normal_use, features_normal_use2, features_attack))
-oClass = np.vstack((oClass_normal_use, oClass_normal_use2, oClass_attack))
+features = np.vstack((features_normal_use, features_normal_use2)) #, features_attack))
+oClass = np.vstack((oClass_normal_use, oClass_normal_use2)) # , oClass_attack))
 
 print('Train Stats Features Size:', features.shape)
 
@@ -218,10 +221,10 @@ plotFeatures(features, oClass, 0, 1)  # 0,8
 ## -- 5 -- ##
 features_normal_useS, oClass_normal_use = extractFeaturesSilence(normal_use_train, Class=0)
 features_normal_use2S, oClass_normal_use2 = extractFeaturesSilence(normal_use_train2, Class=1)
-features_attackS, oClass_attack = extractFeaturesSilence(attack_train, Class=2)
+# features_attackS, oClass_attack = extractFeaturesSilence(attack_train, Class=2)
 
-featuresS = np.vstack((features_normal_useS, features_normal_use2S, features_attackS))
-oClass = np.vstack((oClass_normal_use, oClass_normal_use2, oClass_attack))
+featuresS = np.vstack((features_normal_useS, features_normal_use2S)) #, features_attackS))
+oClass = np.vstack((oClass_normal_use, oClass_normal_use2)) #, oClass_attack))
 
 print('Train Silence Features Size:', featuresS.shape)
 plt.figure(5)
@@ -245,7 +248,7 @@ S, scalesF = scalogram.scalogramCWT(data, scales)
 plt.plot(scalesF, S, 'g')
 
 nObs, nSamp, nCol = attack_train.shape
-data = attack_train[i, :, 1]
+data = attack_test[i, :, 1]
 S, scalesF = scalogram.scalogramCWT(data, scales)
 plt.plot(scalesF, S, 'r')
 
@@ -257,10 +260,10 @@ waitforEnter()
 scales = [2, 4, 8, 16, 32, 64]
 features_normal_useW, oClass_normal_use = extractFeaturesWavelet(normal_use_train, scales, Class=0)
 features_normal_use2W, oClass_normal_use2 = extractFeaturesWavelet(normal_use_train2, scales, Class=1)
-features_attackW, oClass_attack = extractFeaturesWavelet(attack_train, scales, Class=2)
+# features_attackW, oClass_attack = extractFeaturesWavelet(attack_train, scales, Class=2)
 
-featuresW = np.vstack((features_normal_useW, features_normal_use2W, features_attackW))
-oClass = np.vstack((oClass_normal_use, oClass_normal_use2, oClass_attack))
+featuresW = np.vstack((features_normal_useW, features_normal_use2W)) #, features_attackW))
+oClass = np.vstack((oClass_normal_use, oClass_normal_use2)) #, oClass_attack))
 
 print('Train Wavelet Features Size:', featuresW.shape)
 plt.figure(7)
