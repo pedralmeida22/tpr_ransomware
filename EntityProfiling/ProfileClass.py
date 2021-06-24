@@ -164,6 +164,47 @@ def distance(c, p):
     return (np.sqrt(np.sum(np.square(p - c))))
 
 
+def resultsInfo(nObsTest, L1, L2, L3):
+    AnomResults = {-1: "Anomaly", 1: "OK"}
+
+    cntLinear = 0
+    cntRbf = 0
+    cntPoly = 0
+
+    for i in range(nObsTest):
+
+        linear_answer = AnomResults[L1[i]]
+        rbf_answer = AnomResults[L2[i]]
+        poly_answer = AnomResults[L3[i]]
+
+        type = Classes[o3testClass[i][0]];
+        t_normal = bcolors.OKGREEN + 'Normal' + bcolors.ENDC
+        t_normal2 = bcolors.OKGREEN + 'Normal2' + bcolors.ENDC
+        t_attack = bcolors.WARNING + 'Attack' + bcolors.ENDC
+
+        linear_cond1 = ((type == t_normal) or (type == t_normal2)) and (linear_answer == "OK")
+        linear_cond2 = (type == t_attack) and (linear_answer == "Anomaly")
+
+        rbf_cond1 = ((type == t_normal) or (type == t_normal2)) and (rbf_answer == "OK")
+        rbf_cond2 = (type == t_attack) and (rbf_answer == "Anomaly")
+
+        poly_cond1 = ((type == t_normal) or (type == t_normal2)) and (poly_answer == "OK")
+        poly_cond2 = (type == t_attack) and (poly_answer == "Anomaly")
+
+        if linear_cond1 or linear_cond2:
+            cntLinear += 1
+        if rbf_cond1 or rbf_cond2:
+            cntRbf += 1
+        if poly_cond1 or poly_cond2:
+            cntPoly += 1
+
+        print('Obs: {:2} ({:<8}): Kernel Linear->{:<10} | Kernel RBF->{:<10} | Kernel Poly->{:<10}'.format(i, Classes[
+            o3testClass[i][0]], AnomResults[L1[i]], AnomResults[L2[i]], AnomResults[L3[i]]))
+
+    print("\nlinear %: ", str((cntLinear / nObsTest) * 100))
+    print("rbf %: ", str((cntRbf / nObsTest) * 100))
+    print("poly %: ", str((cntPoly / nObsTest) * 100))
+
 ########### Main Code #############
 Classes = {0: bcolors.OKGREEN + 'Normal' + bcolors.ENDC, 1: bcolors.OKGREEN + 'Normal2' + bcolors.ENDC, 2: bcolors.WARNING + 'Attack' + bcolors.ENDC}
 plt.ion()
@@ -172,7 +213,7 @@ nfig = 1
 ## -- 1 -- ##
 normal_use = np.loadtxt('normal_use.dat')
 normal_use2 = np.loadtxt('normal_use_v2.dat')
-attack = np.loadtxt('attack.dat')
+attack = np.loadtxt('attack_v2.dat')
 
 plt.figure(1)
 plot3Classes(normal_use, 'Normal', normal_use2, 'Normal2', attack, 'Attack')
@@ -366,42 +407,9 @@ L3 = poly_ocsvm.predict(i3AtestFeaturesNPCA)
 
 AnomResults = {-1: "Anomaly", 1: "OK"}
 
-cntLinear = 0
-cntRbf = 0
-cntPoly = 0
-
 nObsTest, nFea = i3AtestFeaturesNPCA.shape
-for i in range(nObsTest):
-    linear_answer = AnomResults[L1[i]]
-    rbf_answer = AnomResults[L2[i]]
-    poly_answer = AnomResults[L3[i]]
 
-    type = Classes[o3testClass[i][0]];
-    t_normal = bcolors.OKGREEN + 'Normal' + bcolors.ENDC
-    t_normal2 = bcolors.OKGREEN + 'Normal2' + bcolors.ENDC
-    t_attack = bcolors.WARNING + 'Attack' + bcolors.ENDC
-
-    linear_cond1 = ((type == t_normal) or (type == t_normal2)) and (linear_answer == "OK")
-    linear_cond2 = (type == t_attack) and (linear_answer == "Anomaly")
-
-    rbf_cond1 = ((type == t_normal) or (type == t_normal2)) and (rbf_answer == "OK")
-    rbf_cond2 = (type == t_attack) and (rbf_answer == "Anomaly")
-
-    poly_cond1 = ((type == t_normal) or (type == t_normal2)) and (poly_answer == "OK")
-    poly_cond2 = (type == t_attack) and (poly_answer == "Anomaly")
-
-    if linear_cond1 or linear_cond2:
-        cntLinear += 1
-    if rbf_cond1 or rbf_cond2:
-        cntRbf += 1
-    if poly_cond1 or poly_cond2:
-        cntPoly += 1
-    print('Obs: {:2} ({:<8}): Kernel Linear->{:<10} | Kernel RBF->{:<10} | Kernel Poly->{:<10}'.format(i, Classes[
-        o3testClass[i][0]], AnomResults[L1[i]], AnomResults[L2[i]], AnomResults[L3[i]]))
-
-print("\nlinear %: ", str((cntLinear / nObsTest) * 100))
-print("rbf %: ", str((cntRbf / nObsTest) * 100))
-print("poly %: ", str((cntPoly / nObsTest) * 100))
+resultsInfo(nObsTest, L1, L2, L3)
 
 ## -- 15 -- ##
 from sklearn import svm
@@ -415,43 +423,6 @@ L1 = ocsvm.predict(i3AtestFeaturesN)
 L2 = rbf_ocsvm.predict(i3AtestFeaturesN)
 L3 = poly_ocsvm.predict(i3AtestFeaturesN)
 
-AnomResults = {-1: "Anomaly", 1: "OK"}
-
-cntLinear = 0
-cntRbf = 0
-cntPoly = 0
-
 nObsTest, nFea = i3AtestFeaturesN.shape
-for i in range(nObsTest):
 
-    linear_answer = AnomResults[L1[i]]
-    rbf_answer = AnomResults[L2[i]]
-    poly_answer = AnomResults[L3[i]]
-
-    type = Classes[o3testClass[i][0]];
-    t_normal = bcolors.OKGREEN + 'Normal' + bcolors.ENDC
-    t_normal2 = bcolors.OKGREEN + 'Normal2' + bcolors.ENDC
-    t_attack = bcolors.WARNING + 'Attack' + bcolors.ENDC
-
-    linear_cond1 = ((type == t_normal) or (type == t_normal2)) and (linear_answer == "OK")
-    linear_cond2 = (type == t_attack) and (linear_answer == "Anomaly")
-
-    rbf_cond1 = ((type == t_normal) or (type == t_normal2)) and (rbf_answer == "OK")
-    rbf_cond2 = (type == t_attack) and (rbf_answer == "Anomaly")
-
-    poly_cond1 = ((type == t_normal) or (type == t_normal2)) and (poly_answer == "OK")
-    poly_cond2 = (type == t_attack) and (poly_answer == "Anomaly")
-
-    if linear_cond1 or linear_cond2:
-        cntLinear += 1
-    if rbf_cond1 or rbf_cond2:
-        cntRbf += 1
-    if poly_cond1 or poly_cond2:
-        cntPoly += 1
-
-    print('Obs: {:2} ({:<8}): Kernel Linear->{:<10} | Kernel RBF->{:<10} | Kernel Poly->{:<10}'.format(i, Classes[
-        o3testClass[i][0]], AnomResults[L1[i]], AnomResults[L2[i]], AnomResults[L3[i]]))
-
-print("\nlinear %: ", str((cntLinear / nObsTest) * 100))
-print("rbf %: ", str((cntRbf / nObsTest) * 100))
-print("poly %: ", str((cntPoly / nObsTest) * 100))
+resultsInfo(nObsTest, L1, L2, L3)
